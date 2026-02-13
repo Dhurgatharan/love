@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Someone Special</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS STYLING --- */
+        :root {
+            --primary: #ff4d6d;
+            --bg-dark: #1a0b2e;
+            --bg-light: #431259;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-light) 100%);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* Floating Background Hearts */
+        .bg-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-heart {
+            position: absolute;
+            bottom: -10px;
+            color: rgba(255, 77, 109, 0.3);
+            animation: floatUp 10s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Avatar */
+        .avatar-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            box-shadow: 0 0 20px var(--primary);
+            overflow: hidden;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            background: #fff;
+        }
+        
+        .avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        p.subtitle {
+            opacity: 0.8;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        /* Sections */
+        .section {
+            width: 100%;
+            margin-bottom: 30px;
+            opacity: 0; /* Hidden initially for animation */
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Cuteness Meter */
+        .meter-box {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff4d6d, #ff8fa3);
+            border-radius: 10px;
+            transition: width 2s cubic-bezier(0.25, 1, 0.5, 1);
+            position: relative;
+        }
+
+        .glow-btn {
+            background: var(--primary);
+            border: none;
+            padding: 12px 30px;
+            color: white;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--primary);
+            transition: transform 0.2s;
+        }
+
+        .glow-btn:active { transform: scale(0.95); }
+
+        /* Reveal Cards */
+        .card-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .reveal-card {
+            background: var(--glass);
+            backdrop-filter: blur(5px);
+            padding: 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .reveal-card:active { transform: scale(0.98); }
+
+        .card-content { filter: blur(8px); transition: filter 0.5s; }
+        .card-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary);
+            background: rgba(0,0,0,0.2);
+            transition: opacity 0.5s;
+        }
+
+        .reveal-card.revealed .card-content { filter: blur(0); }
+        .reveal-card.revealed .card-overlay { opacity: 0; pointer-events: none; }
+
+        /* Note Section */
+        .note-area {
+            background: #fff;
+            color: #333;
+            padding: 25px;
+            border-radius: 5px; /* Paper look */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: rotate(-2deg);
+            display: none; /* Hidden until clicked */
+            text-align: left;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+        }
+        
+        .note-area::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 30px;
+            background: rgba(255, 77, 109, 0.2);
+            border-radius: 5px 5px 0 0;
+        }
+
+        .typewriter-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 15px;
+            background-color: black;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink { 50% { opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-hearts" id="bg-hearts"></div>
+
+    <div class="container">
+        
+        <div class="section visible">
+            <div class="avatar-circle">
+                <img src="https://media1.tenor.com/m/t7aI-j2fQ98AAAAC/peach-goma-peach-and-goma.gif" alt="Cute Character">
+            </div>
+            <h1>Hey Beautiful</h1>
+            <p class="subtitle">Do you know how amazing you are?</p>
+        </div>
+
+        <div class="section visible">
+            <div class="meter-box">
+                <h3>Cuteness Meter</h3>
+                <div class="progress-container">
+                    <div class="progress-bar" id="cute-bar"></div>
+                </div>
+                <div id="percent-text" style="margin-bottom: 15px; font-weight: bold;">0%</div>
+                <button class="glow-btn" onclick="measureCuteness(this)">Measure Me!</button>
+            </div>
+        </div>
+
+        <div class="section" id="cards-section">
+            <h3 style="font-family: 'Dancing Script'; font-size: 1.8rem; margin-bottom: 15px;">Reasons why I like you</h3>
+            <div class="card-container">
+                <div class="reveal-card" onclick="reveal(this)">
+                    <div class="card-overlay">Tap to Reveal ❤️</div>
+                    <div class="card-content">You have the sweetest smile 😊</div>
+                </div>
+                <div class="reveal-card" onclick="reveal(this)">
+                    <div class="card-overlay">Tap to Reveal ✨</div>
+                    <div class="card-content">You make my bad days better.</div>
+                </div>
+                <div class="reveal-card" onclick="reveal(this)">
+                    <div class="card-overlay">Tap to Reveal 👀</div>
+                    <div class="card-content">I don’t know what magic you hide in your eyes, but they defeat me every single time I look at you.</div>
+                </div>
+                <div class="reveal-card" onclick="reveal(this)">
+                    <div class="card-overlay">Tap to Reveal 🔥</div>
+                    <div class="card-content">You are effortlessly charming.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="note-section" style="margin-top: 40px;">
+            <p style="margin-bottom: 15px;">One last thing...</p>
+            <button class="glow-btn" id="open-note-btn" onclick="openNote()">Open Letter 💌</button>
+            
+            <div class="note-area" id="note-area">
+                <p class="typewriter-text" id="typewriter"></p><span class="cursor"></span>
+            </div>
+        </div>
+
+        <div style="height: 50px;"></div>
+    </div>
+
+    <script>
+        /* --- JAVASCRIPT LOGIC --- */
+
+        // 1. Generate Background Hearts
+        function createHearts() {
+            const container = document.getElementById('bg-hearts');
+            const heartCount = 20;
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('bg-heart');
+                heart.innerHTML = '❤';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(heart);
+            }
+        }
+        createHearts();
+
+        // 2. Measure Cuteness Logic
+        function measureCuteness(btn) {
+            btn.disabled = true;
+            btn.innerText = "Calculating...";
+            const bar = document.getElementById('cute-bar');
+            const text = document.getElementById('percent-text');
+            
+            let width = 0;
+            const interval = setInterval(() => {
+                width++;
+                bar.style.width = width + '%';
+                text.innerText = width + '%';
+                
+                if (width >= 100) {
+                    clearInterval(interval);
+                    // Overload effect
+                    setTimeout(() => {
+                        bar.style.width = '128%';
+                        bar.style.backgroundColor = '#ff0000';
+                        text.innerText = "128% - WARNING: TOO CUTE! 😍";
+                        text.style.color = "#ff4d6d";
+                        btn.style.display = 'none';
+                        
+                        // Show next section
+                        document.getElementById('cards-section').classList.add('visible');
+                    }, 500);
+                }
+            }, 30);
+        }
+
+        // 3. Reveal Card Logic
+        let cardsRevealed = 0;
+        function reveal(card) {
+            if (!card.classList.contains('revealed')) {
+                card.classList.add('revealed');
+                cardsRevealed++;
+                // If all cards revealed, show the note section
+                if (cardsRevealed === 4) {
+                    setTimeout(() => {
+                        document.getElementById('note-section').classList.add('visible');
+                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    }, 800);
+                }
+            }
+        }
+
+        // 4. Typewriter Note Logic
+        const message = "I just wanted to tell you how truly special you are to me. In a world that feels loud and rushed every day, you are my quiet place — the calm my heart looks for without even asking. Just thinking about you brings a strange comfort I can’t explain, like everything inside me finally settles for a moment. Time has changed many things around me, but it never changed the way I value you. Your smile still lives in my memories, your laugh still echoes in my mind, and the warmth you gave me is something I still carry with me. Some people come into life and pass like a season, but you stayed like a feeling — gentle, constant, and impossible to replace. You became a part of my thoughts, my memories, and a small piece of who I am. No matter how far life moves us or how much time passes, my heart still holds a soft space only meant for you. Some people are simply unforgettable, not because we hold on tightly, but because our heart never really learns to let them go. And for me, that will always be you — my favorite person, my comfort, and a memory I will always cherish";
+        let i = 0;
+        
+        function openNote() {
+            document.getElementById('open-note-btn').style.display = 'none';
+            document.getElementById('note-area').style.display = 'block';
+            typeWriter();
+        }
+
+        function typeWriter() {
+            if (i < message.length) {
+                document.getElementById("typewriter").innerHTML += message.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50); // Speed of typing
+            }
+        }
+    </script>
+</body>
+</html>
